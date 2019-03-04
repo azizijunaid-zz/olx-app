@@ -9,9 +9,12 @@
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
     "react-fb-image-grid": "^0.1.5",
+    "react-loader-spinner": "^2.3.0",
     "react-moment": "^0.8.4",
+    "react-redux": "^6.0.1",
     "react-scripts": "2.1.5",
     "reactstrap": "^7.1.0",
+    "redux": "^4.0.1",
     "rxjs": "^6.4.0"
   },
   "scripts": {

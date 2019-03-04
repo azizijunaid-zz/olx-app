@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { getAllAds, searchProductByText } from '../config/firebase';
+import Loader from 'react-loader-spinner'
 // import FbImageLibrary from 'react-fb-image-grid';
 import Moment from 'react-moment';
 // import { Subject } from 'rxjs';
@@ -16,32 +17,39 @@ export default class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ads: []
+      ads: [],
+      isLoading: false
     }
     this.onAdsTextChangeHandler = this.onAdsTextChangeHandler.bind(this);
     this.addAds = this.addAds.bind(this);
   }
 
   componentDidMount() {
+    this.setState({isLoading: true});
     getAllAds()
       .then(data => {
         console.log('data ads', data);
         this.setState({ ads: data });
+        this.setState({isLoading: false});
+
       }).catch(err => {
+        this.setState({isLoading: false});
         console.log('err in ads', err)
       })
   }
 
   onAdsTextChangeHandler(e) {
+    this.setState({isLoading: true});
     searchProductByText(e.target.value)
       .then((querySnapshot) => {
-          console.log('querySnapshot', " => ", querySnapshot);
-          this.setState({ads: querySnapshot});
+        console.log('querySnapshot', " => ", querySnapshot);
+        this.setState({ ads: querySnapshot });
+        this.setState({isLoading: false});
       });
 
   }
 
-  addAds(){
+  addAds() {
     this.refs.adsChild.toggleAdsAdd();
   }
 
@@ -50,23 +58,28 @@ export default class Dashboard extends Component {
     return (
       <div>
         <h3>Top picks for you </h3>
-        <AdsAddModal ref="adsChild" adsAddModal={this.addAds}/>
-        <Row>
+        <AdsAddModal ref="adsChild" adsAddModal={this.addAds} />
+        <Row style={{ 'marginBottom': '15px' }}>
           <Col sm="4"></Col>
           <Col sm="4">
-            Search Product<input placeholder="search here" onChange={this.onAdsTextChangeHandler} />
+            <p style={{ 'marginBottom': '15px', fontWeight: 'bold' }}>Search Product</p><input placeholder="search here" onChange={this.onAdsTextChangeHandler} />
           </Col>
-          <Col sm="4">
-            <Button color="primary" onClick={this.addAds}>Add your ad</Button>
+          <Col sm="4" style={{ 'marginBottom': '15px' }}>
+            <Button style={{ 'marginTop': '15px' }} color="primary" onClick={this.addAds}>Add your ad</Button>
           </Col>
         </Row>
+        { this.state.isLoading && <Loader
+          type="Circles"
+          color="#FFB606"
+          height="100"
+          width="100" />}
 
         {
           ads.map(ad => {
             return (
               <Row className="justify-content-center">
                 <Col sm="4" md="3" lg="3" xl="3">
-                  <Card>
+                  <Card style={{marginBottom: '2.5rem'}}>
                     {/* <CardImg top width="100%" src="https://placeholdit.imgix.net/~text?txtsize=33&txt=318%C3%97180&w=318&h=180" alt="Card image cap" /> */}
                     {/* <FbImageLibrary width="auto" images={ad.images}/> */}
 
@@ -74,6 +87,7 @@ export default class Dashboard extends Component {
                     <CardBody>
                       <CardTitle>{ad.title}</CardTitle>
                       <CardText>{ad.description}</CardText>
+                      <CardText>{ad.price} Rs</CardText>
                       <CardText>
                         <small className="text-muted">Last updated <Moment fromNow>{ad.createdAt}</Moment></small>
                       </CardText>
@@ -84,6 +98,8 @@ export default class Dashboard extends Component {
             )
           })
         }
+
+        { !this.state.isLoading && !ads.length && <div>Not Found :-( </div>}
       </div>
     )
   }
