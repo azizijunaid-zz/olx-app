@@ -6,6 +6,8 @@ import { userAuth, logout, isLoggedIn } from './config/firebase';
 import RegisterModal from './components/RegisterModal';
 import LoginModal from './components/LoginModal';
 import Dashboard from './screens/Dashboard';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 class App extends Component {
   user;
@@ -43,7 +45,7 @@ class App extends Component {
       console.log('outh change', user)
       if (user) {
         console.log('user logged', user);
-        this.setState({ user : isLoggedIn() });
+        this.setState({ user: isLoggedIn() });
       } else {
         this.setState({ user });
         console.log('logedout user')
@@ -55,29 +57,31 @@ class App extends Component {
   render() {
     const { user } = this.state;
     return (
-      <div className="App">
-        <div>
-          <Nav className="navbar-dark">
-            <NavItem>
-              <NavLink href="" >OLX</NavLink>
-            </NavItem>
-            {user === null && <NavItem>
-              <NavLink href="#" onClick={this.registerModal}>Register</NavLink>
-            </NavItem>}
-            {user === null && <NavItem>
-              <NavLink href="#" onClick={this.login}>Login</NavLink>
-            </NavItem>}
-            <NavItem>
-              <NavLink href="#" onClick={this.logout}>Logout</NavLink>
-            </NavItem>
+      <Provider store={store}>
+        <div className="App">
+          <div>
+            <Nav className="navbar-dark">
+              <NavItem>
+                <NavLink href="" >OLX</NavLink>
+              </NavItem>
+              {user === null && <NavItem>
+                <NavLink href="#" onClick={this.registerModal}>Register</NavLink>
+              </NavItem>}
+              {user === null && <NavItem>
+                <NavLink href="#" onClick={this.login}>Login</NavLink>
+              </NavItem>}
+              <NavItem>
+                <NavLink href="#" onClick={this.logout}>Logout</NavLink>
+              </NavItem>
 
-            <RegisterModal ref="registerChild" registerModal={this.SignUpModal} />
-            <LoginModal ref="loginChild" logInModal={this.loginModal} />
-          </Nav>
+              <RegisterModal ref="registerChild" registerModal={this.SignUpModal} />
+              <LoginModal ref="loginChild" logInModal={this.loginModal} />
+            </Nav>
 
-          {user !==null && <Dashboard />}
+            {user !== null && <Dashboard />}
+          </div>
         </div>
-      </div>
+      </Provider>
     );
   }
 }

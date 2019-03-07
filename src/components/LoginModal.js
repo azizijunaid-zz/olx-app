@@ -1,10 +1,11 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Col, Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import React, { Component } from 'react';
-import { login } from '../config/firebase';
+import { login, facebookLogin } from '../config/firebase';
+
 
 class LoginModal extends Component {
-
+    
     constructor(props) {
         super(props);
         this.state = {
@@ -18,6 +19,7 @@ class LoginModal extends Component {
         this.addEmail = this.addEmail.bind(this);
         this.addPassword = this.addPassword.bind(this);
         this.loginUser = this.loginUser.bind(this);
+        this.fblogin = this.fblogin.bind(this);
     }
 
     addEmail(e) {
@@ -38,6 +40,18 @@ class LoginModal extends Component {
         e.preventDefault();
         login(this.state.email, this.state.password).then(user=>{
             this.toggleLogin();  
+        });
+    }
+
+    fblogin(){
+        facebookLogin()
+        .then((response)=>{
+            this.user = response;
+            this.toggleLogin();  
+        })
+        .catch( err => {
+            this.toggleLogin();  
+            console.log(err)
         });
     }
     render() {
@@ -65,6 +79,11 @@ class LoginModal extends Component {
                             <FormGroup row>
                                 <Col sm={{ size: 10, offset: 5 }}>
                                     <Button onClick={this.loginUser}>Login</Button>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup row>
+                                <Col sm={{ size: 10, offset: 5 }}>
+                                    <Button onClick={this.fblogin}>login with facebook</Button>
                                 </Col>
                             </FormGroup>
                         </Form>

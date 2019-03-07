@@ -13,6 +13,7 @@
     "react-moment": "^0.8.4",
     "react-redux": "^6.0.1",
     "react-scripts": "2.1.5",
+    "reactrangeslider": "^3.0.6",
     "reactstrap": "^7.1.0",
     "redux": "^4.0.1",
     "rxjs": "^6.4.0"

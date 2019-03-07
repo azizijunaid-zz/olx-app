@@ -1,50 +1,74 @@
 import React, { Component } from 'react'
 import { getAllAds, searchProductByText } from '../config/firebase';
-import Loader from 'react-loader-spinner'
+import Loader from 'react-loader-spinner';
+import RangeSlider from 'reactrangeslider';
+
 // import FbImageLibrary from 'react-fb-image-grid';
 import Moment from 'react-moment';
 // import { Subject } from 'rxjs';
 import {
-  Container, Row, Col,
+  Row, Col,
   Card, CardImg, CardText, CardBody,
-  CardTitle, CardSubtitle, Button
+  CardTitle, Button
 } from 'reactstrap';
 import AdsAddModal from '../components/adsAddModal';
+
+
+// const MyPage = (value, onChange) => {
+//   return (
+//     <div>
+//       <RangeSlider
+//         value={value}
+//         onChange={onChange}
+//         min={20}
+//         max={100}
+//         step={5}
+//       />
+//     </div>
+//   )
+// }
 
 export default class Dashboard extends Component {
   // startAt = new Subject();
   // endAt = new Subject();
+ 
+  // value = { start: 100, end: 10000000 }
   constructor(props) {
     super(props);
     this.state = {
       ads: [],
-      isLoading: false
+      isLoading: false,
+      // value: {
+      //   start: 100,
+      //   end: 10000000,
+      // },
     }
     this.onAdsTextChangeHandler = this.onAdsTextChangeHandler.bind(this);
+    this.onChangeSlider = this.onChangeSlider.bind(this);
     this.addAds = this.addAds.bind(this);
   }
 
   componentDidMount() {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     getAllAds()
       .then(data => {
         console.log('data ads', data);
         this.setState({ ads: data });
-        this.setState({isLoading: false});
+        this.setState({ isLoading: false });
 
       }).catch(err => {
-        this.setState({isLoading: false});
+        this.setState({ isLoading: false });
         console.log('err in ads', err)
       })
   }
 
   onAdsTextChangeHandler(e) {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     searchProductByText(e.target.value)
       .then((querySnapshot) => {
         console.log('querySnapshot', " => ", querySnapshot);
         this.setState({ ads: querySnapshot });
-        this.setState({isLoading: false});
+        this.setState({ isLoading: false });
       });
 
   }
@@ -53,11 +77,25 @@ export default class Dashboard extends Component {
     this.refs.adsChild.toggleAdsAdd();
   }
 
+  onChangeSlider(value) {
+    console.log(value);
+    this.setState({ value })
+  }
+
   render() {
-    const { ads } = this.state;
+    const { ads, value } = this.state;
+
+    console.log('value', value)
+
     return (
       <div>
-        <h3>Top picks for you </h3>
+        <h3>`Top picks for you` </h3>
+        {/* <MyPage
+          value='jhk'
+          onChange={this.onChangeSlider}
+        /> */}
+
+
         <AdsAddModal ref="adsChild" adsAddModal={this.addAds} />
         <Row style={{ 'marginBottom': '15px' }}>
           <Col sm="4"></Col>
@@ -68,7 +106,7 @@ export default class Dashboard extends Component {
             <Button style={{ 'marginTop': '15px' }} color="primary" onClick={this.addAds}>Add your ad</Button>
           </Col>
         </Row>
-        { this.state.isLoading && <Loader
+        {this.state.isLoading && <Loader
           type="Circles"
           color="#FFB606"
           height="100"
@@ -79,7 +117,7 @@ export default class Dashboard extends Component {
             return (
               <Row className="justify-content-center">
                 <Col sm="4" md="3" lg="3" xl="3">
-                  <Card style={{marginBottom: '2.5rem'}}>
+                  <Card style={{ marginBottom: '2.5rem', boxShadow: '1px 4px 5px lightslategrey' }}>
                     {/* <CardImg top width="100%" src="https://placeholdit.imgix.net/~text?txtsize=33&txt=318%C3%97180&w=318&h=180" alt="Card image cap" /> */}
                     {/* <FbImageLibrary width="auto" images={ad.images}/> */}
 
@@ -99,7 +137,7 @@ export default class Dashboard extends Component {
           })
         }
 
-        { !this.state.isLoading && !ads.length && <div>Not Found :-( </div>}
+        {!this.state.isLoading && !ads.length && <div>Not Found :-( </div>}
       </div>
     )
   }
